@@ -21,15 +21,11 @@ import java.util.logging.Logger;
 public class loginchecker {
     
     public static int logincheck(String eingabe_name,String eingabe_password) throws SQLException{
-        Connection dbprojekt; //Variabler Name für die Verbindung
-            Statement statement; //Befehlskanal
-            ResultSet rs_zugriff; //Result Set
-            dbprojekt = DriverManager.getConnection("jdbc:postgresql://localhost:5432/projekt", "postgres", "123");
-        statement = dbprojekt.createStatement();
-        String sql_zugriff = "SELECT * FROM login WHERE login_name='"+eingabe_name+"' AND password='"+eingabe_password+"'";
-        rs_zugriff=statement.executeQuery(sql_zugriff);        
+        databaseexecutes dbverbindung=new databaseexecutes();
+        dbverbindung.DatabaseConnection();
+        String sql_zugriff = "SELECT * FROM login WHERE login_name='"+eingabe_name+"' AND password='"+eingabe_password+"'";              
          int zugriff=0;
-         if(rs_zugriff.next()){
+         if(dbverbindung.SQLQuerry(sql_zugriff).next()){
              zugriff=1;
          }        
         return zugriff;

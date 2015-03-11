@@ -211,7 +211,7 @@ public class hauptseite extends javax.swing.JFrame {
               String film_name=s_filter.getText();
               String suche="SELECT * FROM film WHERE titel='"+film_name+"'";
               String beschr="SELECT beschreibung FROM film";            
-              String sql_wertung="SELECT COUNT(bewertung) FROM bewertung";
+              String sql_wertung="SELECT bewertung FROM bewertung";
               //String sql_wertung="SELECT AVG(bewertung) FROM bewertung";             
               String kommentar="SELECT kommentar FROM bewertung";
               if (statement.executeQuery(suche).next()){
@@ -221,15 +221,23 @@ public class hauptseite extends javax.swing.JFrame {
               f_beschreibung.setText(beschreibung.getString("beschreibung"));
               }
               rank=statement.executeQuery(sql_wertung); 
-              int ergebnis=0;
+              double ergebnis=0;
+              int i=0;     
+              int Speicher1=0;
+              int zwspeicher=0;
               while (rank.next()){
                   int speicher=Integer.parseInt(rank.getString("bewertung"));
-                  for (int i=0;i<rank.getLong(sql_wertung);i++){
-                  int zwspeicher=speicher;
-                  ergebnis=(speicher+zwspeicher)/i;
-              }
-              }
-              Integer test= new Integer (ergebnis);
+                  i ++;
+                  int ergebnis1=zwspeicher+speicher;                  
+                  zwspeicher=speicher;
+                  
+                  Speicher1=ergebnis1;                 
+                  System.out.println(Speicher1);
+              }   
+              ergebnis=(Speicher1)/i;
+                  Math.round(ergebnis);
+                  System.out.println(ergebnis);
+              Double test= new Double (ergebnis);
               String s=test.toString();
               f_wertung.setText(s);
                   System.out.println(rank);
@@ -268,7 +276,7 @@ public class hauptseite extends javax.swing.JFrame {
               
         } catch (Exception ex){  
             //Logger.getLogger(Filmehinzufügen.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this,"Bewertung für diesen Benutzer schon vorhaneden");
+            JOptionPane.showMessageDialog(this,"Bewertung für diesen Benutzer schon vorhanden");
          }
     }//GEN-LAST:event_jButton2ActionPerformed
 
