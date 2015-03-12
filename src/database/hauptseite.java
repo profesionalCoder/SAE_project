@@ -6,11 +6,12 @@
 
 package database;
 
-import com.sun.glass.ui.Window;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -21,6 +22,7 @@ import javax.swing.JOptionPane;
  */
 public class hauptseite extends javax.swing.JFrame {
 
+    HashMap<Integer,String> kommentare;
     /**
      * Creates new form hauptseite
      */
@@ -53,11 +55,11 @@ public class hauptseite extends javax.swing.JFrame {
         f_wertung = new javax.swing.JLabel();
         b_wert = new javax.swing.JTextField();
         f_titel = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        f_kommentar = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         user_id = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        f_kommentar = new javax.swing.JList();
 
         jLabel3.setText("jLabel3");
 
@@ -98,13 +100,16 @@ public class hauptseite extends javax.swing.JFrame {
 
         jLabel5.setText("Wertung 1-10");
 
-        f_kommentar.setColumns(20);
-        f_kommentar.setRows(5);
-        jScrollPane4.setViewportView(f_kommentar);
-
         jLabel1.setText("Kommerntare");
 
         jLabel6.setText("User-Id");
+
+        f_kommentar.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane5.setViewportView(f_kommentar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -118,7 +123,7 @@ public class hauptseite extends javax.swing.JFrame {
                         .addComponent(f_titel, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(f_wertung, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
@@ -163,7 +168,7 @@ public class hauptseite extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
+                                .addComponent(jScrollPane1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(1, 1, 1)
@@ -189,8 +194,9 @@ public class hauptseite extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(f_wertung, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane4)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap())))))
         );
 
@@ -200,51 +206,47 @@ public class hauptseite extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
        Connection dbprojekt;
        Statement statement;
-       ResultSet beschreibung;
-       ResultSet rank;
-       ResultSet komi;
+       ResultSet rs_beschreibung;
+       ResultSet rs_rank;
+       ResultSet rs_komi;
+       ResultSet rs_anzahl;
        
        try{
            Class.forName("org.postgresql.Driver").newInstance();
               dbprojekt = DriverManager.getConnection("jdbc:postgresql://localhost:5432/projekt","postgres","123");
               statement = dbprojekt.createStatement();
               String film_name=s_filter.getText();
-              String suche="SELECT * FROM film WHERE titel='"+film_name+"'";
-              String beschr="SELECT beschreibung FROM film";            
+              String sql_suche="SELECT * FROM film WHERE titel='"+film_name+"'";
+              String sql_beschr="SELECT beschreibung FROM film";            
               String sql_wertung="SELECT bewertung FROM bewertung";
-              //String sql_wertung="SELECT AVG(bewertung) FROM bewertung";             
-              String kommentar="SELECT kommentar FROM bewertung";
-              if (statement.executeQuery(suche).next()){
+              //String sql_anzahldatensätze="SELECT COUNT(bewertung) FROM bewertung";
+              //String sql_wertung="SELECT AVG(bewertung) FROM bewertung";        
+              if (statement.executeQuery(sql_suche).next()){
               f_titel.setText(film_name);
-              beschreibung=statement.executeQuery(beschr);
-              while (beschreibung.next()){
-              f_beschreibung.setText(beschreibung.getString("beschreibung"));
+              rs_beschreibung=statement.executeQuery(sql_beschr);
+              while (rs_beschreibung.next()){
+              f_beschreibung.setText(rs_beschreibung.getString("beschreibung"));
               }
-              rank=statement.executeQuery(sql_wertung); 
-              double ergebnis=0;
+              //Bewertungsdurchschnitt ausrechen
+              rs_rank=statement.executeQuery(sql_wertung); 
               int i=0;     
-              int Speicher1=0;
-              int zwspeicher=0;
-              while (rank.next()){
-                  int speicher=Integer.parseInt(rank.getString("bewertung"));
+              float Speicher1=0;
+              float zwergebnis=0;
+              while (rs_rank.next()){
+                  float speicher=Integer.parseInt(rs_rank.getString("bewertung"));
                   i ++;
-                  int ergebnis1=zwspeicher+speicher;                  
-                  zwspeicher=speicher;
-                  
-                  Speicher1=ergebnis1;                 
-                  System.out.println(Speicher1);
+                  zwergebnis=zwergebnis+speicher;     
+                  Speicher1=zwergebnis;
               }   
-              ergebnis=(Speicher1)/i;
-                  Math.round(ergebnis);
-                  System.out.println(ergebnis);
-              Double test= new Double (ergebnis);
-              String s=test.toString();
-              f_wertung.setText(s);
-                  System.out.println(rank);
-              
-              komi=statement.executeQuery(kommentar);
-              while(komi.next()){
-                  f_kommentar.setText(komi.getString("kommentar"));
+              float ergebnis=(Speicher1)/i;
+              ergebnis=Math.round(ergebnis);
+              Double avg= new Double (ergebnis);
+              String s=avg.toString();
+              f_wertung.setText(s);                 
+              //Kommentare hohlen und in Liste schreiben
+              rs_komi=statement.executeQuery(kommentar);
+              while(rs_komi.next()){
+                  f_kommentar.setText(rs_komi.getString("kommentar"));
               }
               } else {
                   JOptionPane.showMessageDialog(this, "Film nicht in der Datenbank vorhanden");
@@ -313,11 +315,26 @@ public class hauptseite extends javax.swing.JFrame {
             }
         });
     }
+    private HashMap<Integer,String> getKommentareFilm() throws SQLException{
+        String sql_komi="SELECT * FROM bewertung";
+        databaseexecutes dbverbindung=new databaseexecutes();
+        dbverbindung.DatabaseConnection();
+        ResultSet rs_komi=dbverbindung.SQLQuerry(sql_komi);
+        
+        HashMap<Integer,String> kommentare=new HashMap<>();
+        
+        while (rs_komi.next()){
+            int id=Integer.parseInt(rs_komi.getString(sql_komi));
+            String komi=rs_komi.getString("kommentar");
+            kommentare.put(id, "kommentar");
+        }
+        return kommentare;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField b_wert;
     private javax.swing.JTextArea f_beschreibung;
-    private javax.swing.JTextArea f_kommentar;
+    private javax.swing.JList f_kommentar;
     private javax.swing.JLabel f_titel;
     private javax.swing.JLabel f_wertung;
     private javax.swing.JButton jButton1;
@@ -332,7 +349,7 @@ public class hauptseite extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTextArea k_text;
     private javax.swing.JTextField s_filter;
     private javax.swing.JLabel user_id;
