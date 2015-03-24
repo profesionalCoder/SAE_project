@@ -11,10 +11,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.ListModel;
 
 /**
  *
@@ -27,7 +29,7 @@ public class hauptseite extends javax.swing.JFrame {
      * Creates new form hauptseite
      */
     public hauptseite() {
-        initComponents();
+        initComponents();        
     }
 
     /**
@@ -56,10 +58,8 @@ public class hauptseite extends javax.swing.JFrame {
         b_wert = new javax.swing.JTextField();
         f_titel = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        user_id = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
-        f_kommentar = new javax.swing.JList();
+        f_komentar = new javax.swing.JList();
 
         jLabel3.setText("jLabel3");
 
@@ -102,14 +102,12 @@ public class hauptseite extends javax.swing.JFrame {
 
         jLabel1.setText("Kommerntare");
 
-        jLabel6.setText("User-Id");
-
-        f_kommentar.setModel(new javax.swing.AbstractListModel() {
+        f_komentar.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane5.setViewportView(f_kommentar);
+        jScrollPane5.setViewportView(f_komentar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -123,18 +121,14 @@ public class hauptseite extends javax.swing.JFrame {
                         .addComponent(f_titel, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(f_wertung, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(163, 163, 163)
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(32, 32, 32)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addComponent(user_id, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -162,18 +156,10 @@ public class hauptseite extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(jScrollPane1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(1, 1, 1)
-                                .addComponent(user_id, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -194,9 +180,8 @@ public class hauptseite extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(f_wertung, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                                 .addContainerGap())))))
         );
 
@@ -218,7 +203,7 @@ public class hauptseite extends javax.swing.JFrame {
               String film_name=s_filter.getText();
               String sql_suche="SELECT * FROM film WHERE titel='"+film_name+"'";
               String sql_beschr="SELECT beschreibung FROM film";            
-              String sql_wertung="SELECT bewertung FROM bewertung";
+              String sql_wertung="SELECT bewertung FROM bewertung";             
               //String sql_anzahldatensätze="SELECT COUNT(bewertung) FROM bewertung";
               //String sql_wertung="SELECT AVG(bewertung) FROM bewertung";        
               if (statement.executeQuery(sql_suche).next()){
@@ -244,9 +229,9 @@ public class hauptseite extends javax.swing.JFrame {
               String s=avg.toString();
               f_wertung.setText(s);                 
               //Kommentare hohlen und in Liste schreiben
-              rs_komi=statement.executeQuery(kommentar);
-              while(rs_komi.next()){
-                  f_kommentar.setText(rs_komi.getString("kommentar"));
+              ArrayList<String>  temp = getKommentarFilm();
+              for (int j=0;j<getKommentarFilm().size();j++){
+                  f_komentar.setListData(temp.toArray());
               }
               } else {
                   JOptionPane.showMessageDialog(this, "Film nicht in der Datenbank vorhanden");
@@ -315,6 +300,19 @@ public class hauptseite extends javax.swing.JFrame {
             }
         });
     }
+    private ArrayList getKommentarFilm() throws SQLException{
+        databaseexecutes dbverbindung=new databaseexecutes();
+        dbverbindung.DatabaseConnection();
+        String sql_komi="SELECT kommentar FROM bewertung";
+        ResultSet rs_komi=dbverbindung.SQLQuerry(sql_komi);
+        ArrayList<String> kommentar = new ArrayList<> ();
+        
+        while (rs_komi.next()){
+            kommentar.add(rs_komi.getString("kommentar"));
+        }
+        return kommentar;
+    }
+    /*
     private HashMap<Integer,String> getKommentareFilm() throws SQLException{
         String sql_komi="SELECT * FROM bewertung";
         databaseexecutes dbverbindung=new databaseexecutes();
@@ -329,12 +327,12 @@ public class hauptseite extends javax.swing.JFrame {
             kommentare.put(id, "kommentar");
         }
         return kommentare;
-    }
+    }*/
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField b_wert;
     private javax.swing.JTextArea f_beschreibung;
-    private javax.swing.JList f_kommentar;
+    private javax.swing.JList f_komentar;
     private javax.swing.JLabel f_titel;
     private javax.swing.JLabel f_wertung;
     private javax.swing.JButton jButton1;
@@ -344,7 +342,6 @@ public class hauptseite extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JList jList1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -352,6 +349,5 @@ public class hauptseite extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTextArea k_text;
     private javax.swing.JTextField s_filter;
-    private javax.swing.JLabel user_id;
     // End of variables declaration//GEN-END:variables
 }
