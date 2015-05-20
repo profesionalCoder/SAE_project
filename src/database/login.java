@@ -157,11 +157,16 @@ public class login extends javax.swing.JFrame {
         Connection dbprojekt;
         Statement statement;
         try {
-            dbprojekt = DriverManager.getConnection("jdbc:postgresql://localhost:5432/projekt", "postgres", "123");
-            statement = dbprojekt.createStatement();
-            String sql_statement = "INSERT INTO \"login\" VALUES (DEFAULT, '" +this.b_name.getText()+ "' , '" +this.p_password.getText()+ "')";
-            statement.executeUpdate(sql_statement);
-        } catch (SQLException ex) {
+                databaseexecutes dbverbindung= new databaseexecutes();
+                dbverbindung.DatabaseConnection();
+                dbprojekt = DriverManager.getConnection("jdbc:postgresql://localhost:5432/dbprojekt", "projekt", "geheim");
+                statement = dbprojekt.createStatement(); 
+                if (this.b_name.getText().isEmpty()||this.p_password.getText().isEmpty()){
+                    check_user_data.setText("Fehler");
+                } else {
+                String sql_statement = "INSERT INTO \"login\" VALUES (DEFAULT, '" +this.b_name.getText()+ "' , '" +this.p_password.getText()+ "')";
+                statement.executeUpdate(sql_statement);
+            }} catch (SQLException ex) {
             Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton2ActionPerformed

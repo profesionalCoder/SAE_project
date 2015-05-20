@@ -12,7 +12,6 @@
   </persistence-unit>
   <persistence-unit name="projektPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>database.Genre</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/projekt"/>
       <property name="javax.persistence.jdbc.password" value="123"/>

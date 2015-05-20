@@ -25,7 +25,7 @@ public class databaseexecutes {
     public void DatabaseConnection(){
         try {
             Class.forName("org.postgresql.Driver").newInstance();
-            dbprojekt = DriverManager.getConnection("jdbc:postgresql://localhost:5432/projekt","postgres","123");
+            dbprojekt = DriverManager.getConnection("jdbc:postgresql://localhost:5432/dbprojekt","projekt","geheim");
             statement = dbprojekt.createStatement();
         } catch (Exception ex) {
             Logger.getLogger(databaseexecutes.class.getName()).log(Level.SEVERE, null, ex);
@@ -43,8 +43,15 @@ public class databaseexecutes {
         return null;
     }   
     
-    public int SQLUpdate(String query){
-       return 0; 
+    public Integer SQLUpdate(String query){
+        int anzahl;
+        try{
+        anzahl=statement.executeUpdate(query);
+        return anzahl;
+       }catch (SQLException ex){
+           System.out.println("Fehler");
+       }
+        return null; 
     }
     
     public void disconnectDatabase (){

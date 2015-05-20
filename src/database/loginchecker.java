@@ -35,7 +35,7 @@ public class loginchecker {
         Connection dbprojekt;
         Statement statement;
         ResultSet rs_id;
-        dbprojekt = DriverManager.getConnection("jdbc:postgresql://localhost:5432/projekt", "postgres", "123");
+        dbprojekt = DriverManager.getConnection("jdbc:postgresql://localhost:5432/dbprojekt", "projekt", "geheim");
         statement = dbprojekt.createStatement();
         String sql_id = "SELECT login_id FROM login WHERE login_name='"+eingabe_name+"' AND password='"+eingabe_password+"'";
         rs_id=statement.executeQuery(sql_id);
