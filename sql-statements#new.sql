@@ -206,7 +206,7 @@ INSERT INTO genre VALUES
 
 -- Filme
 INSERT INTO film VALUES
-    (DEFAULT, 'Die Üblichen Verdaechtigen', 'Der Gauner Verbal überlebt eine Schiffsexplosion und erzählt wie es dazu kam.', 1995, 'http://ecx.images-amazon.com/images/I/51F79NR50JL.jpg');
+    (DEFAULT, 'Die Ueblichen Verdaechtigen', 'Der Gauner Verbal ueberlebt eine Schiffsexplosion und erzählt wie es dazu kam.', 1995, 'http://ecx.images-amazon.com/images/I/51F79NR50JL.jpg');
 
 INSERT INTO film VALUES
     (DEFAULT, 'Wall-E', 'Wall-E räumt als letzter die Erde auf.', 2008, 'http://wallerz.net/wp-content/uploads/2015/01/3731_wall-e.jpg');
