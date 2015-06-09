@@ -22,15 +22,7 @@ this.user_id=id;
 
     private user() {
         }
-/*
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-*/
+    
     public int getUser_id() {
         return user_id;
     }

@@ -6,13 +6,8 @@
 
 package database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -32,13 +27,10 @@ public class loginchecker {
     }   
     
     public static void setloginId(String eingabe_name,String eingabe_password) throws SQLException{
-        Connection dbprojekt;
-        Statement statement;
-        ResultSet rs_id;
-        dbprojekt = DriverManager.getConnection("jdbc:postgresql://localhost:5432/dbprojekt", "projekt", "geheim");
-        statement = dbprojekt.createStatement();
+        databaseexecutes dbverbindung= new databaseexecutes();
+        dbverbindung.DatabaseConnection();
         String sql_id = "SELECT login_id FROM login WHERE login_name='"+eingabe_name+"' AND password='"+eingabe_password+"'";
-        rs_id=statement.executeQuery(sql_id);
+        ResultSet rs_id=dbverbindung.SQLQuerry(sql_id);
         int id=0;
         while (rs_id.next()){
             id=Integer.parseInt(rs_id.getString("login_id"));

@@ -43,7 +43,6 @@ public class login extends javax.swing.JFrame {
         p_password = new javax.swing.JPasswordField();
         jButton2 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
-        check = new javax.swing.JLabel();
         check_user_data = new javax.swing.JLabel();
 
         jLabel4.setText("jLabel4");
@@ -99,11 +98,8 @@ public class login extends javax.swing.JFrame {
                         .addGap(66, 66, 66)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(check_user_data, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(check, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(check_user_data, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(64, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -115,7 +111,6 @@ public class login extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(b_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(check, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(check_user_data, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -139,9 +134,10 @@ public class login extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         int zugriff=0;        
         //Methode logincheck aus der Klasse loginchecker ausführen und zurück geben ob User berechtigt ist oder nicht
+        String eingabe_password=new String(p_password.getPassword());
         try {
-            zugriff=loginchecker.logincheck(this.b_name.getText(),this.p_password.getText());
-            loginchecker.setloginId(this.b_name.getText(),this.p_password.getText());
+            zugriff=loginchecker.logincheck(this.b_name.getText(),eingabe_password);
+            loginchecker.setloginId(this.b_name.getText(),eingabe_password);
         } catch (SQLException ex) {
             Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -154,19 +150,22 @@ public class login extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        Connection dbprojekt;
-        Statement statement;
         try {
-                databaseexecutes dbverbindung= new databaseexecutes();
-                dbverbindung.DatabaseConnection();
-                dbprojekt = DriverManager.getConnection("jdbc:postgresql://localhost:5432/dbprojekt", "projekt", "geheim");
-                statement = dbprojekt.createStatement(); 
-                if (this.b_name.getText().isEmpty()||this.p_password.getText().isEmpty()){
-                    check_user_data.setText("Fehler");
-                } else {
-                String sql_statement = "INSERT INTO \"login\" VALUES (DEFAULT, '" +this.b_name.getText()+ "' , '" +this.p_password.getText()+ "')";
-                statement.executeUpdate(sql_statement);
-            }} catch (SQLException ex) {
+            databaseexecutes dbverbindung= new databaseexecutes();
+            dbverbindung.DatabaseConnection();
+            String eingabe_password=new String(p_password.getPassword());
+            String sql_eingabename="SELECT login_name from login where login_name='"+this.b_name.getText()+"'";
+            if (this.b_name.getText().isEmpty()||eingabe_password.isEmpty()||this.b_name.getText().length()>50||eingabe_password.length()>50){
+                check_user_data.setText("Ungueltige Eingabe");
+            } else if(dbverbindung.SQLQuerry(sql_eingabename).next()){
+                check_user_data.setText("Benutzername schon vorhanden");
+            }
+            else {
+                String sql_anlegen = "INSERT INTO \"login\" VALUES (DEFAULT, '" +this.b_name.getText()+ "' , '" +eingabe_password+ "')";
+                dbverbindung.SQLUpdate(sql_anlegen);
+                check_user_data.setText("Benutzer erfolgreich angelegt");
+            }
+        } catch (SQLException ex) {
             Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -208,7 +207,6 @@ public class login extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField b_name;
-    private javax.swing.JLabel check;
     private javax.swing.JLabel check_user_data;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

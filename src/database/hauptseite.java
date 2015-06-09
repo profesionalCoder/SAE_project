@@ -7,7 +7,6 @@
 package database;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -16,7 +15,6 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.ListModel;
 
 /**
  *
@@ -29,9 +27,25 @@ public class hauptseite extends javax.swing.JFrame {
      * Creates new form hauptseite
      */
     public hauptseite() {
-        initComponents();        
+        initComponents();  
+        databaseexecutes dbverbindung= new  databaseexecutes();
+        dbverbindung.DatabaseConnection();
+        //Set Username in Mainpage
+        String sql_username="SELECT login_name FROM login WHERE login_id='"+user.GetInstance().getUser_id()+"'";
+        ResultSet rs_username=dbverbindung.SQLQuerry(sql_username);
+        try {
+            while(rs_username.next()){
+                f_username.setText(rs_username.getString("login_name"));
+            }
+            //TopTen initialisieren
+              ArrayList<String> top=getTopTenFilme();
+            for (Object topTenFilme : getTopTenFilme()) {
+                f_topten.setListData(top.toArray());
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(hauptseite.class.getName()).log(Level.SEVERE, null, ex);
+        }        
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -62,6 +76,12 @@ public class hauptseite extends javax.swing.JFrame {
         f_komentar = new javax.swing.JList();
         jSeparator1 = new javax.swing.JSeparator();
         jSeparator2 = new javax.swing.JSeparator();
+        f_username = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        f_genrelist = new javax.swing.JList();
+        jButton3 = new javax.swing.JButton();
 
         jLabel3.setText("jLabel3");
 
@@ -88,7 +108,7 @@ public class hauptseite extends javax.swing.JFrame {
         f_beschreibung.setRows(5);
         jScrollPane2.setViewportView(f_beschreibung);
 
-        jLabel4.setText("Wertung");
+        jLabel4.setText("Wertung:");
 
         k_text.setColumns(20);
         k_text.setRows(5);
@@ -103,16 +123,25 @@ public class hauptseite extends javax.swing.JFrame {
 
         jLabel5.setText("Wertung 1-10");
 
-        jLabel1.setText("Kommerntare");
+        jLabel1.setText("Kommerntare:");
 
-        f_komentar.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane5.setViewportView(f_komentar);
 
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jLabel6.setText("Benutzername");
+
+        jLabel7.setText("Genre:");
+
+        f_genrelist.setLayoutOrientation(javax.swing.JList.HORIZONTAL_WRAP);
+        jScrollPane4.setViewportView(f_genrelist);
+
+        jButton3.setText("bearbeiten");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -124,94 +153,110 @@ public class hauptseite extends javax.swing.JFrame {
                     .addComponent(jSeparator1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(33, 33, 33)
-                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(s_filter, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jButton1)
-                                .addGap(259, 259, 259))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(64, 64, 64)
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(f_username, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton3)
+                                .addGap(18, 18, 18))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel1)
-                                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(f_wertung, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(b_wert, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(21, 21, 21))
+                                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jScrollPane3))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(b_wert, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jButton2))
-                                        .addGap(146, 146, 146))
-                                    .addComponent(jScrollPane3)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(166, 166, 166)
-                                .addComponent(f_titel, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(f_titel, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(f_wertung, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(14, 14, 14)
+                                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGap(0, 66, Short.MAX_VALUE))
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jButton2)
+                                    .addComponent(jLabel1))
+                                .addGap(34, 34, 34)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(s_filter, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
-                .addGap(4, 4, 4)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(f_username, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(s_filter, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jButton3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jScrollPane1))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(33, 33, 33)
-                                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(b_wert, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(0, 5, Short.MAX_VALUE)))
-                                .addGap(232, 232, 232))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(f_titel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jScrollPane2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(11, 11, 11)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
+                                            .addComponent(f_wertung, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
+                                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jButton2)
-                                            .addComponent(f_wertung, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(102, 102, 102)
+                                .addComponent(jButton2))
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(b_wert, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(38, 38, 38))
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 426, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 426, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         pack();
@@ -221,17 +266,18 @@ public class hauptseite extends javax.swing.JFrame {
        ResultSet rs_titel;
        ResultSet rs_beschreibung;
        ResultSet rs_rank;
-       ResultSet rs_komi;
-       ResultSet rs_anzahl;
+       ResultSet rs_user_wertung;
+       ResultSet rs_user_kritik;
        
        try{
-           Class.forName("org.postgresql.Driver").newInstance();
               databaseexecutes dbverbindung = new databaseexecutes();
               dbverbindung.DatabaseConnection();              
               String film_name=s_filter.getText();
-              String sql_suche="SELECT * FROM film WHERE UPPER(titel)=Upper('"+film_name+"')";
-              String sql_beschr="SELECT beschreibung FROM film WHERE UPPER(titel)=UPPER('"+film_name+"')";            
-              String sql_wertung="select avg(bewertung) as wertung from film inner join bewertung on film.film_id=bewertung.fk_film_id where bewertung.fk_film_id=(SELECT film_id from film where titel='"+film_name+"')";
+              String sql_suche="SELECT * FROM film WHERE UPPER(titel)=Upper('"+film_name+"') OR UPPER(titel) like UPPER('%"+film_name+"%')";
+              String sql_beschr="SELECT beschreibung FROM film WHERE UPPER(titel)=UPPER('"+film_name+"') OR UPPER(titel) like UPPER('%"+film_name+"%')"; 
+              String sql_wertung="select avg(bewertung) as wertung from film inner join bewertung on film.film_id=bewertung.fk_film_id where bewertung.fk_film_id=(SELECT film_id from film where UPPER(titel)=UPPER('"+film_name+"') OR UPPER(titel) like UPPER('%"+film_name+"%'))";
+              String sql_user_wertung="select bewertung from bewertung where fk_login_id='"+user.GetInstance().getUser_id()+"'";
+              String sql_kritik="select kommentar from bewertung where fk_login_id='"+user.GetInstance().getUser_id()+"'";
               rs_titel=dbverbindung.SQLQuerry(sql_suche);
               if (rs_titel.next()){
                   f_titel.setText(rs_titel.getString("titel"));
@@ -244,31 +290,26 @@ public class hauptseite extends javax.swing.JFrame {
               while(rs_rank.next()){
               f_wertung.setText(rs_rank.getString("wertung"));
               }
-              /*rs_rank=statement.executeQuery(sql_wertung); 
-              int i=0;     
-              float Speicher1=0;
-              float zwergebnis=0;
-              while (rs_rank.next()){
-                  float speicher=Integer.parseInt(rs_rank.getString("bewertung"));
-                  i ++;
-                  zwergebnis=zwergebnis+speicher;     
-                  Speicher1=zwergebnis;
-              }   
-              float ergebnis=(Speicher1)/i;
-              ergebnis=Math.round(ergebnis);
-              Double avg= new Double (ergebnis);
-              String s=avg.toString();
-              f_wertung.setText(s);  */               
+              //Genre ausgeben              
+              ArrayList<String> genre = getGenre();
+              for (Object Genre : getGenre()){
+                  f_genrelist.setListData(genre.toArray());
+              }
               //Kommentare hohlen und in Liste schreiben
               ArrayList<String>  komi = getKommentarFilm();
-              for (int j=0;j<getKommentarFilm().size();j++){
-                  f_komentar.setListData(komi.toArray());
-              }
-              //TopTen initialisieren
-              ArrayList<String> top=getTopTenFilme();
-              for(int j=0;j<getTopTenFilme().size();j++){
-                  f_topten.setListData(top.toArray());
-              }
+                  for (Object kommentarFilm : getKommentarFilm()) {
+                      f_komentar.setListData(komi.toArray());
+                  }
+              //Benutzer spezifische Wertung hohlen
+                  rs_user_wertung=dbverbindung.SQLQuerry(sql_user_wertung);
+                  while(rs_user_wertung.next()){
+                      b_wert.setText(rs_user_wertung.getString("bewertung"));
+                  }
+              //Benutzer spezifische Kritik hohlen
+                  rs_user_kritik=dbverbindung.SQLQuerry(sql_kritik);
+                  while(rs_user_kritik.next()){
+                      k_text.setText(rs_user_kritik.getString("kommentar"));
+                  }
               } else {
                   JOptionPane.showMessageDialog(this, "Film nicht in der Datenbank vorhanden");
               }
@@ -282,27 +323,27 @@ public class hauptseite extends javax.swing.JFrame {
         Statement statement;
                        
         try{
-            Class.forName("org.postgresql.Driver").newInstance();
             databaseexecutes dbverbindung=new databaseexecutes();
             dbverbindung.DatabaseConnection();
-            String sql_film_id="SELECT film_id FROM film WHERE titel='"+this.s_filter.getText()+"'";
-            dbverbindung.SQLQuerry(sql_film_id);            
+            String sql_film_id="SELECT film_id FROM film WHERE titel='"+this.f_titel.getText()+"'";           
               //Film ID für den aktuell ausgewählten Film hohlen              
-              int test=0;
+              int aktuellerfilm_id=0;
               ResultSet rs_film_id=dbverbindung.SQLQuerry(sql_film_id);
               while(rs_film_id.next()){
-              test=Integer.parseInt(rs_film_id.getString("film_id"));
+              aktuellerfilm_id=Integer.parseInt(rs_film_id.getString("film_id"));
               }
-              //Bewertung und Kommentar in DB schreiben wenn noch kein Eintrag für diesen Benutzer vorliegt              
-              String sql_bewerten="INSERT INTO bewertung (fk_film_id,fk_login_id,bewertung,kommentar) VALUES ('"+test+"','"+user.GetInstance().getUser_id()+"','"+this.b_wert.getText()+"','"+this.k_text.getText()+"')";
-              dbverbindung.SQLUpdate(sql_bewerten);
-              
+              //Bewertung und Kommentar in DB schreiben wenn noch kein Eintrag für diesen Benutzer vorliegt
+              String sql_upsert="BEGIN; LOCK TABLE bewertung IN SHARE ROW EXCLUSIVE MODE; WITH upsert AS (UPDATE bewertung SET bewertung='"+b_wert.getText()+"',kommentar='"+k_text.getText()+"' WHERE fk_login_id='"+user.GetInstance().getUser_id()+"' RETURNING *) INSERT INTO bewertung (fk_login_id,fk_film_id,bewertung, kommentar) SELECT '"+user.GetInstance().getUser_id()+"','"+aktuellerfilm_id+"','"+b_wert.getText()+"','"+k_text.getText()+"'  WHERE NOT EXISTS(SELECT * FROM upsert);COMMIT;";
+              dbverbindung.SQLQuerry(sql_upsert);
         } catch (Exception ex){  
-            //Logger.getLogger(Filmehinzufügen.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this,"Bewertung für diesen Benutzer schon vorhanden");
+            Logger.getLogger(hauptseite.class.getName()).log(Level.SEVERE, null, ex);            
          }
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        new userdelete().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jButton3ActionPerformed
     /**
      * @param args the command line arguments
      */
@@ -359,40 +400,40 @@ public class hauptseite extends javax.swing.JFrame {
         }
         return topten;
     }
-    /*
-    private HashMap<Integer,String> getKommentareFilm() throws SQLException{
-        String sql_komi="SELECT * FROM bewertung";
-        databaseexecutes dbverbindung=new databaseexecutes();
+    private ArrayList getGenre()throws SQLException{
+        databaseexecutes dbverbindung= new databaseexecutes();
         dbverbindung.DatabaseConnection();
-        ResultSet rs_komi=dbverbindung.SQLQuerry(sql_komi);
-        
-        HashMap<Integer,String> kommentare=new HashMap<>();
-        
-        while (rs_komi.next()){
-            int id=Integer.parseInt(rs_komi.getString(sql_komi));
-            String komi=rs_komi.getString("kommentar");
-            kommentare.put(id, "kommentar");
+        String sql_genre="select genre_name as filmgenre from genre inner join genre_film on genre.genre_id=genre_film.fk_genre_id where fk_film_id=(SELECT film_id from film where titel='"+this.f_titel.getText()+"')";
+        ResultSet rs_genre=dbverbindung.SQLQuerry(sql_genre);
+        ArrayList<String> genre=new ArrayList<>();
+        while(rs_genre.next()){
+            genre.add(rs_genre.getString("filmgenre"));
         }
-        return kommentare;
-    }*/
-
+        return genre;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField b_wert;
     private javax.swing.JTextArea f_beschreibung;
+    private javax.swing.JList f_genrelist;
     private javax.swing.JList f_komentar;
     private javax.swing.JLabel f_titel;
     private javax.swing.JList f_topten;
+    private javax.swing.JLabel f_username;
     private javax.swing.JLabel f_wertung;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
