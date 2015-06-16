@@ -155,7 +155,7 @@ public class login extends javax.swing.JFrame {
             dbverbindung.DatabaseConnection();
             String eingabe_password=new String(p_password.getPassword());
             String sql_eingabename="SELECT login_name from login where login_name='"+this.b_name.getText()+"'";
-            if (this.b_name.getText().isEmpty()||eingabe_password.isEmpty()||this.b_name.getText().length()>50||eingabe_password.length()>50){
+            if (this.b_name.getText().isEmpty()||eingabe_password.isEmpty()||this.b_name.getText().length()<5||eingabe_password.length()<6){
                 check_user_data.setText("Ungueltige Eingabe");
             } else if(dbverbindung.SQLQuerry(sql_eingabename).next()){
                 check_user_data.setText("Benutzername schon vorhanden");

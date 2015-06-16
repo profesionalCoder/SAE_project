@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author cebit
+ * @author sfey
  */
 public class userdelete extends javax.swing.JFrame {
 
@@ -135,7 +135,9 @@ public class userdelete extends javax.swing.JFrame {
         databaseexecutes dbverbindung=new databaseexecutes();
         dbverbindung.DatabaseConnection();
         String sql_changepassword="update login set password='"+this.n_password.getText()+"' where login_id='"+user.GetInstance().getUser_id()+"'";
-        dbverbindung.SQLUpdate(sql_changepassword);        
+        if(n_password.getText().length()>=6){
+            dbverbindung.SQLUpdate(sql_changepassword);  
+        }     
         new login().setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton3ActionPerformed
