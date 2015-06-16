@@ -100,6 +100,7 @@ public class hauptseite extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         f_genrelist = new javax.swing.JList();
         jButton3 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         jLabel3.setText("jLabel3");
 
@@ -161,6 +162,13 @@ public class hauptseite extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Film erstellen");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -172,7 +180,10 @@ public class hauptseite extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(41, 41, 41)
+                                .addComponent(jButton1)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -231,7 +242,8 @@ public class hauptseite extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(s_filter, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btn_search, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1)))
                     .addComponent(jButton3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -293,12 +305,12 @@ public class hauptseite extends javax.swing.JFrame {
        try{
               databaseexecutes dbverbindung = new databaseexecutes();
               dbverbindung.DatabaseConnection();              
-              String film_name=s_filter.getText();
+              String film_name=s_filter.getText();              
               String sql_suche="SELECT * FROM film WHERE UPPER(titel)=Upper('"+film_name+"') OR UPPER(titel) like UPPER('%"+film_name+"%')";
               String sql_beschr="SELECT beschreibung FROM film WHERE UPPER(titel)=UPPER('"+film_name+"') OR UPPER(titel) like UPPER('%"+film_name+"%')"; 
-              String sql_wertung="select avg(bewertung) as wertung from film inner join bewertung on film.film_id=bewertung.fk_film_id where bewertung.fk_film_id=(SELECT film_id from film where UPPER(titel)=UPPER('"+film_name+"') OR UPPER(titel) like UPPER('%"+film_name+"%'))";
-              String sql_user_wertung="select bewertung from bewertung WHERE fk_film_id = (SELECT film_id FROM film WHERE UPPER(titel)=Upper('"+film_name+"') OR UPPER(titel) like UPPER('%"+film_name+"%')) AND fk_login_id = '"+user.GetInstance().getUser_id()+"'";
-              String sql_kritik="select kommentar from bewertung WHERE fk_film_id = (SELECT film_id FROM film WHERE UPPER(titel)=Upper('"+film_name+"') OR UPPER(titel) like UPPER('%"+film_name+"%')) AND fk_login_id = '"+user.GetInstance().getUser_id()+"'";
+              //String sql_wertung="SELECT AVG(bewertung) AS wertung FROM film INNER JOIN bewertung ON film.film_id=bewertung.fk_film_id WHERE bewertung.fk_film_id=(SELECT film_id FROM film WHERE UPPER(titel)=UPPER('"+film_name+"') OR UPPER(titel) LIKE UPPER('%"+film_name+"%'))";
+              //String sql_user_wertung="SELECT bewertung FROM bewertung WHERE fk_film_id = (SELECT film_id FROM film WHERE UPPER(titel)=Upper('"+film_name+"') OR UPPER(titel) LIKE UPPER('%"+film_name+"%')) AND fk_login_id = '"+user.GetInstance().getUser_id()+"'";
+              //String sql_kritik="SELECT kommentar FROM bewertung WHERE fk_film_id = (SELECT film_id FROM film WHERE UPPER(titel)=Upper('"+film_name+"') OR UPPER(titel) LIKE UPPER('%"+film_name+"%')) AND fk_login_id = '"+user.GetInstance().getUser_id()+"'";
               rs_titel=dbverbindung.SQLQuerry(sql_suche);
               if (rs_titel.next()){
                   f_titel.setText(rs_titel.getString("titel"));
@@ -306,6 +318,7 @@ public class hauptseite extends javax.swing.JFrame {
                   while(rs_beschreibung.next()){
                       f_beschreibung.setText(rs_beschreibung.getString("beschreibung"));
                   }
+              String sql_wertung="SELECT AVG(bewertung) AS wertung FROM film INNER JOIN bewertung ON film.film_id=bewertung.fk_film_id WHERE bewertung.fk_film_id=(SELECT film_id FROM film WHERE titel='"+f_titel.getText()+"')";
               //Bewertungsdurchschnitt ausrechen
               rs_rank=dbverbindung.SQLQuerry(sql_wertung);
               while(rs_rank.next()){
@@ -321,12 +334,14 @@ public class hauptseite extends javax.swing.JFrame {
                   for (Object kommentarFilm : getKommentarFilm()) {
                       f_komentar.setListData(komi.toArray());
                   }
+              String sql_user_wertung="SELECT bewertung FROM bewertung WHERE fk_film_id = (SELECT film_id FROM film WHERE titel='"+f_titel.getText()+"') AND fk_login_id = '"+user.GetInstance().getUser_id()+"'";    
               //Benutzer spezifische Wertung hohlen
                   b_wert.setText("");
                   rs_user_wertung=dbverbindung.SQLQuerry(sql_user_wertung);
                   while(rs_user_wertung.next()){
                       b_wert.setText(rs_user_wertung.getString("bewertung"));
                   }
+              String sql_kritik="SELECT kommentar FROM bewertung WHERE fk_film_id = (SELECT film_id FROM film WHERE titel='"+f_titel.getText()+"') AND fk_login_id = '"+user.GetInstance().getUser_id()+"'";    
               //Benutzer spezifische Kritik hohlen
                   k_text.setText("");
                   rs_user_kritik=dbverbindung.SQLQuerry(sql_kritik);
@@ -380,6 +395,10 @@ public class hauptseite extends javax.swing.JFrame {
         new userdelete().setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        new filmerstellen().setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
     /**
      * @param args the command line arguments
      */
@@ -416,7 +435,7 @@ public class hauptseite extends javax.swing.JFrame {
     private ArrayList getKommentarFilm() throws SQLException{
         databaseexecutes dbverbindung=new databaseexecutes();
         dbverbindung.DatabaseConnection();
-        String sql_komi="select kommentar as komi from film inner join bewertung on film.film_id=bewertung.fk_film_id where bewertung.fk_film_id=(select film_id from film where titel='"+this.f_titel.getText()+"')";
+        String sql_komi="SELECT kommentar AS komi FROM film INNER JOIN bewertung ON film.film_id=bewertung.fk_film_id WHERE bewertung.fk_film_id=(select film_id from film WHERE titel='"+this.f_titel.getText()+"')";
         ResultSet rs_komi=dbverbindung.SQLQuerry(sql_komi);
         ArrayList<String> kommentar = new ArrayList<> ();
         
@@ -428,7 +447,7 @@ public class hauptseite extends javax.swing.JFrame {
     private ArrayList getTopTenFilme() throws SQLException{
         databaseexecutes dbverbindung=new databaseexecutes();
         dbverbindung.DatabaseConnection();
-        String sql_topten="select titel, (summe / anzahl) as topten from film WHERE summe != 0 ORDER BY topten DESC";
+        String sql_topten="SELECT titel, (summe / anzahl) AS topten FROM film WHERE summe != 0 ORDER BY topten DESC";
         ResultSet rs_topten=dbverbindung.SQLQuerry(sql_topten);
         ArrayList<String> topten = new ArrayList<>();
         while(rs_topten.next()){
@@ -439,7 +458,7 @@ public class hauptseite extends javax.swing.JFrame {
     private ArrayList getGenre()throws SQLException{
         databaseexecutes dbverbindung= new databaseexecutes();
         dbverbindung.DatabaseConnection();
-        String sql_genre="select genre_name as filmgenre from genre inner join genre_film on genre.genre_id=genre_film.fk_genre_id where fk_film_id=(SELECT film_id from film where titel='"+this.f_titel.getText()+"')";
+        String sql_genre="SELECT genre_name AS filmgenre FROM genre INNER JOIN genre_film ON genre.genre_id=genre_film.fk_genre_id WHERE fk_film_id=(SELECT film_id FROM film WHERE titel='"+this.f_titel.getText()+"')";
         ResultSet rs_genre=dbverbindung.SQLQuerry(sql_genre);
         ArrayList<String> genre=new ArrayList<>();
         while(rs_genre.next()){
@@ -457,6 +476,7 @@ public class hauptseite extends javax.swing.JFrame {
     private javax.swing.JList f_topten;
     private javax.swing.JLabel f_username;
     private javax.swing.JLabel f_wertung;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;

@@ -117,8 +117,8 @@ public class userdelete extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         databaseexecutes dbverbindung=new databaseexecutes();
         dbverbindung.DatabaseConnection();
-        String sql_userdelete2="delete from bewertung where fk_login_id='"+user.GetInstance().getUser_id()+"'";
-        String sql_userdelete="delete from login where login_id='"+user.GetInstance().getUser_id()+"'";
+        String sql_userdelete2="DELETE FROM bewertung WHERE fk_login_id='"+user.GetInstance().getUser_id()+"'";
+        String sql_userdelete="DELETE FROM login WHERE login_id='"+user.GetInstance().getUser_id()+"'";
         dbverbindung.SQLQuerry(sql_userdelete2);
         dbverbindung.SQLQuerry(sql_userdelete);
         JOptionPane.showMessageDialog(this, "Benutzer erfolgreich entfernt");
@@ -134,7 +134,7 @@ public class userdelete extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         databaseexecutes dbverbindung=new databaseexecutes();
         dbverbindung.DatabaseConnection();
-        String sql_changepassword="update login set password='"+this.n_password.getText()+"' where login_id='"+user.GetInstance().getUser_id()+"'";
+        String sql_changepassword="UPDATE login SET password='"+this.n_password.getText()+"' WHERE login_id='"+user.GetInstance().getUser_id()+"'";
         if(n_password.getText().length()>=6){
             dbverbindung.SQLUpdate(sql_changepassword);  
         }     
